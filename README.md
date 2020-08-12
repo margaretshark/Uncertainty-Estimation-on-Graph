@@ -1,1 +1,1 @@
-# Uncertainty-Estimation-on-Graph
+# Uncertainty-Estimation-on-Graphs
