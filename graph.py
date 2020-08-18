@@ -1,13 +1,15 @@
+import numpy as np
 import time
 import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
+import utils
 
 
 class Net(nn.Module):
 
     def __init__(self, graph_type: str="GCN", dataset_name: str="cora", seed: int=42):
-        set_seed(seed)
+        utils.set_seed(seed)
         if dataset_name == "cora":
             self.num_classes = 7
         
@@ -17,13 +19,13 @@ class Net(nn.Module):
         if dataset_name == "pubmed":
             self.num_classes = 3
         
-        self.graph, self.features, self.labels, self.train_mask, self.test_mask = load_data(dataset_name)
+        self.graph, self.features, self.labels, self.train_mask, self.test_mask = utils.load_data(dataset_name)
         self.features_dimension = len(self.features[0])
 
         if graph_type == "GCN":
             super(Net, self).__init__()
-            self.layer1 = GCNLayer(self.features_dimension, 16)
-            self.layer2 = GCNLayer(16, self.num_classes)
+            self.layer1 = utils.GCNLayer(self.features_dimension, 16)
+            self.layer2 = utils.GCNLayer(16, self.num_classes)
 
     def forward(self):
         x = F.relu(self.layer1(self.graph, self.features))
@@ -39,7 +41,7 @@ class Net(nn.Module):
             self.train()
             logits = self()
             logp = F.log_softmax(logits, 1)
-            loss = F.nll_loss(logp[self.train_mask], labels[self.train_mask])
+            loss = F.nll_loss(logp[self.train_mask], self.labels[self.train_mask])
             
             optimizer.zero_grad()
             loss.backward()

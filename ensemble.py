@@ -1,6 +1,7 @@
 import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
+import graph
 
 
 class Ensemble(nn.Module):
@@ -9,7 +10,7 @@ class Ensemble(nn.Module):
         super(Ensemble, self).__init__()
         self.models = []
         for i in range(num_of_nets):
-            net = Net(graph_type=graph_type, dataset_name=dataset_name, seed=seed + i)
+            net = graph.Net(graph_type=graph_type, dataset_name=dataset_name, seed=seed + i)
             net.graph.add_edges(net.graph.nodes(), net.graph.nodes())
             net.train_loop()
             self.models.append(net)
