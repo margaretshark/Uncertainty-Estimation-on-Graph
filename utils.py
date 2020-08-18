@@ -73,3 +73,18 @@ def accuracy(probs, labels):
     correct = torch.sum(indices_ == labels)
     acc = correct.item() * 1.0 / len(labels)
     return acc
+
+def accuracy_with_rejection(sorted_uncertainty, labels, probs, reject_per_iteration=100):
+    acc_list = []
+    ens = np.array(probs.cpu())
+    prefiction_av = np.mean(ens, axis=1)
+    _, indices_ = th.max(th.Tensor(prefiction_av), dim=1)
+    i_range = int(len(sorted_uncertainty) / reject_per_iteration)
+    for i in range(i_range):
+        new_ind = np.argsort(sorted_uncertainty)[: len(sorted_uncertainty) - i * reject_per_iteration]
+        pred = indices_[new_ind]
+        true_val = labels[new_ind]
+        correct = th.sum(pred == true_val)
+        acc = correct.item() * 1.0 / len(true_val)
+        acc_list.append(acc)
+    return acc_list
