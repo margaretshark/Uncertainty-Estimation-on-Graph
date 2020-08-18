@@ -1,11 +1,23 @@
+import time
+import torch as th
+import torch.nn as nn
+import torch.nn.functional as F
+
+
 class Net(nn.Module):
 
     def __init__(self, graph_type: str="GCN", dataset_name: str="cora", seed: int=42):
         set_seed(seed)
         if dataset_name == "cora":
-            self.graph, self.features, self.labels, self.train_mask, self.test_mask = load_cora_data()
             self.num_classes = 7
-
+        
+        if dataset_name == "citeseer":
+            self.num_classes = 6
+        
+        if dataset_name == "pubmed":
+            self.num_classes = 3
+        
+        self.graph, self.features, self.labels, self.train_mask, self.test_mask = load_data(dataset_name)
         self.features_dimension = len(self.features[0])
 
         if graph_type == "GCN":
