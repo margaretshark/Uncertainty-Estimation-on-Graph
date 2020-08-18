@@ -28,8 +28,14 @@ class GCNLayer(nn.Module):
             return self.linear(h)
 
 
-def load_cora_data():
-    data = citegrh.load_cora()
+def load_data(dataset_name: str):
+    if dataset_name == "cora":
+        data = citegrh.load_cora()
+    if dataset_name == "citeseer":
+        data = citegrh.load_citeseer()
+    if dataset_name == "pubmed":
+        data = citegrh.load_pubmed()
+
     features = th.FloatTensor(data.features)
     labels = th.LongTensor(data.labels)
     train_mask = th.BoolTensor(data.train_mask)
