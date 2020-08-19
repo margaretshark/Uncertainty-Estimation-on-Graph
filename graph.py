@@ -8,26 +8,26 @@ import utils
 
 class Net(nn.Module):
 
-    def __init__(self, graph_type: str="GCN", dataset_name: str="cora", seed: int=42):
+    def __init__(self, params, seed: int=42):
+        super(Net, self).__init__()
         utils.set_seed(seed)
-        if dataset_name == "cora":
+        if params["dataset_name"] == "cora":
             self.num_classes = 7
         
-        if dataset_name == "citeseer":
+        if params["dataset_name"] == "citeseer":
             self.num_classes = 6
         
-        if dataset_name == "pubmed":
+        if params["dataset_name"] == "pubmed":
             self.num_classes = 3
         
-        self.graph, self.features, self.labels, self.train_mask, self.test_mask = utils.load_data(dataset_name)
+        self.graph, self.features, self.labels, self.train_mask, self.test_mask = utils.load_data(params["dataset_name"])
         self.features_dimension = len(self.features[0])
-        super(Net, self).__init__()
 
-        if graph_type == "GCN":
+        if params["graph_type"] == "GCN":
             self.layer1 = utils.GCNLayer(self.features_dimension, 16)
             self.layer2 = utils.GCNLayer(16, self.num_classes)
         
-        if graph_type == "GAT":
+        if params["graph_type"] == "GAT":
             self.layer1 = utils.MultiHeadGATLayer(self.features_dimension, 8, 2)
             self.layer2 = utils.MultiHeadGATLayer(16, self.num_classes, 1)
 

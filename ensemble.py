@@ -1,21 +1,13 @@
 import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
-import graph
-import utils
-import numpy as np
 
 
 class Ensemble(nn.Module):
 
-    def __init__(self, num_of_nets: int=10, graph_type: str="GCN", dataset_name: str="cora", seed: int=42):
+    def __init__(self, models):
         super(Ensemble, self).__init__()
-        self.models = []
-        for i in range(num_of_nets):
-            net = graph.Net(graph_type=graph_type, dataset_name=dataset_name, seed=seed + i)
-            net.graph.add_edges(net.graph.nodes(), net.graph.nodes())
-            net.train_loop()
-            self.models.append(net)
+        self.models = models
 
     def forward(self):
         outs = []
