@@ -129,7 +129,11 @@ def accuracy(probs, labels):
     acc = correct.item() * 1.0 / len(labels)
     return acc
 
-def accuracy_with_rejection(sorted_uncertainty, labels, probs, reject_per_iteration=100):
+def accuracy_with_rejection(probs, labels, ac_function = "bald", reject_per_iteration=10):
+    if ac_function == "bald":
+        sorted_uncertainty = np.argsort(bald(probs))
+    if ac_function == "max_prob":
+        sorted_uncertainty = np.argsort(max_prob(probs))
     acc_list = []
     ens = np.array(probs.cpu())
     prefiction_av = np.mean(ens, axis=1)
