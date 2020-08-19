@@ -2,6 +2,7 @@ import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 import graph
+import utils
 
 
 class Ensemble(nn.Module):
@@ -23,4 +24,11 @@ class Ensemble(nn.Module):
         out = th.cat(outs, dim=1)
         probs = F.softmax(out, dim=-1)
         return probs, labels
-
+    
+    def accuracy_rejection(self, ac_function:str = "bald"):
+        if ac_function == "bald":
+            sorted_uncertainty = np.argsort(utils.bald(self.probs))
+        if ac_function == "max_prob":
+            sorted_uncertainty = np.argsort(utils.max_prob(self.probs))
+        acc_list = utils.accuracy_with_rejection(sorted_uncertainty, labels, probs)
+        return acc_list
