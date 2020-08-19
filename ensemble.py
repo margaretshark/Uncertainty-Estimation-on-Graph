@@ -1,9 +1,7 @@
-import torch as th
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import graph
-import utils
-import numpy as np
 
 
 class Ensemble(nn.Module):
@@ -22,7 +20,7 @@ class Ensemble(nn.Module):
         for model in self.models:
             logits, labels = model.evaluate()
             outs.append(logits.unsqueeze(1))
-        out = th.cat(outs, dim=1)
+        out = torch.cat(outs, dim=1)
         probs = F.softmax(out, dim=-1)
         return probs, labels
-    
+
