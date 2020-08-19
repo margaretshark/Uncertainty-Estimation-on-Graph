@@ -21,11 +21,15 @@ class Net(nn.Module):
         
         self.graph, self.features, self.labels, self.train_mask, self.test_mask = utils.load_data(dataset_name)
         self.features_dimension = len(self.features[0])
+        super(Net, self).__init__()
 
         if graph_type == "GCN":
-            super(Net, self).__init__()
             self.layer1 = utils.GCNLayer(self.features_dimension, 16)
             self.layer2 = utils.GCNLayer(16, self.num_classes)
+        
+        if graph_type == "GAT":
+            self.layer1 = utils.MultiHeadGATLayer(self.features_dimension, 8, 2)
+            self.layer2 = utils.MultiHeadGATLayer(16, self.num_classes, 1)
 
     def forward(self):
         x = F.relu(self.layer1(self.graph, self.features))
