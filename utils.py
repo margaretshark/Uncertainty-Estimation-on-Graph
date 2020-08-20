@@ -23,7 +23,7 @@ class GCNLayer(nn.Module):
     def forward(self, g, feature):
         with g.local_scope():
             g.ndata['h'] = feature
-            #g.update_all(gcn_msg, gcn_reduce)
+            g.update_all(gcn_msg, gcn_reduce)
             h = g.ndata['h']
             return self.linear(h)
 
