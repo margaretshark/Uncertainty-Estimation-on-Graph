@@ -6,7 +6,6 @@ import torch.nn.functional as F
 import utils
 from pytorchtools import EarlyStopping
 
-
 class Net(nn.Module):
 
     def __init__(self, params, seed: int=42):
@@ -40,16 +39,13 @@ class Net(nn.Module):
 
     def train_model(self):
         dur = []
-        train_losses = []
         valid_losses = []
         avg_train_losses = []
         avg_valid_losses = []
         epoch_train_loss = []
-        
-        optimizer = th.optim.Adam(self.parameters(), lr=1e-2)
-        early_stopping = EarlyStopping(patience=self.params["patience"], verbose=True)
 
-        for epoch in range(self.params["n_epochs"]):
+        early_stopping = EarlyStopping(patience=patience, verbose=True)
+        for epoch in range(n_epochs):
             if epoch >= 3:
                 t0 = time.time()
 
@@ -67,6 +63,7 @@ class Net(nn.Module):
 
             acc = calculate_accuracy(*self.evaluate())
             epoch_train_loss_mean = np.mean(epoch_train_loss)
+            lr_scheduler.step(epoch_train_loss_mean)
             print("Epoch {:05d} | loss {:.4f} | Test Acc {:.4f} | Time(s) {:.4f}".format(
                 epoch, loss.item(), acc, np.mean(dur)))
 
@@ -81,7 +78,7 @@ class Net(nn.Module):
 
             train_losses = []
             valid_losses = []
-            
+
             early_stopping(valid_loss, self)
 
             if early_stopping.early_stop:
