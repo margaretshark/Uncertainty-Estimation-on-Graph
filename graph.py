@@ -43,9 +43,9 @@ class Net(nn.Module):
         avg_train_losses = []
         avg_valid_losses = []
         epoch_train_loss = []
-
-        early_stopping = EarlyStopping(patience=patience, verbose=True)
-        for epoch in range(n_epochs):
+        optimizer = torch.optim.Adam(self.parameters(), lr=1e-2)
+        early_stopping = EarlyStopping(patience=self.params["patience"], verbose=True)
+        for epoch in range(self.params["n_epochs"]):
             if epoch >= 3:
                 t0 = time.time()
 
@@ -63,18 +63,17 @@ class Net(nn.Module):
 
             acc = calculate_accuracy(*self.evaluate())
             epoch_train_loss_mean = np.mean(epoch_train_loss)
-            lr_scheduler.step(epoch_train_loss_mean)
             print("Epoch {:05d} | loss {:.4f} | Test Acc {:.4f} | Time(s) {:.4f}".format(
                 epoch, loss.item(), acc, np.mean(dur)))
 
             with torch.no_grad():
-                logits = self(self.graph, self.features)
+                logits = self()
                 logp = F.log_softmax(logits, 1)
                 loss_val = F.nll_loss(logp[self.test_mask], self.labels[self.test_mask])
                 valid_losses.append(loss_val.item())
 
             valid_loss = np.average(valid_losses)
-            epoch_len = len(str(n_epochs))
+            epoch_len = len(str(self.params["n_epochs"]))
 
             train_losses = []
             valid_losses = []
