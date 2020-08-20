@@ -87,4 +87,5 @@ def accuracy_with_rejection(sorted_uncertainty, labels, probs, reject_per_iterat
         correct = torch.sum(pred == true_val)
         acc = correct.item() * 1.0 / len(true_val)
         acc_list.append(acc)
-    return acc_list
+    area = np.trapz(acc_list)
+    return acc_list, area
