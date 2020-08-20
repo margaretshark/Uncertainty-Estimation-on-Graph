@@ -74,7 +74,8 @@ def accuracy(probs, labels):
     acc = correct.item() * 1.0 / len(labels)
     return acc
 
-def accuracy_with_rejection(probs, labels, ac_function = "bald", reject_per_iteration=100):
+def accuracy_with_rejection(probs, labels, ac_function = "bald", reject_percentage=10):
+    reject_per_iteration = len(probs) * reject_percentage / 100 
     if ac_function == "bald":
         sorted_uncertainty = np.argsort(bald(probs))
     if ac_function == "max_prob":
@@ -91,5 +92,5 @@ def accuracy_with_rejection(probs, labels, ac_function = "bald", reject_per_iter
         correct = torch.sum(pred == true_val)
         acc = correct.item() * 1.0 / len(true_val)
         acc_list.append(acc)
-    area = np.trapz(acc_list)
+    area = np.trapz(acc_list, dx=1.0 / reject_per_iteration)
     return acc_list, area
