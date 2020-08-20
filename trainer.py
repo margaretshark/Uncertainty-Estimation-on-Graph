@@ -1,6 +1,6 @@
 import graph
 import os
-import torch as th
+import torch
 import torch.nn as nn
 
 class Trainer(nn.Module):
@@ -16,7 +16,7 @@ class Trainer(nn.Module):
             for i in range(self.params["num_of_nets"]):
                 net = graph.Net(self.params, self.seed + i)
                 filename = f"{self.model_dir}/checkpoint_{i}.pth"
-                net.load_state_dict(th.load(filename))
+                net.load_state_dict(torch.load(filename))
                 self.models.append(net)
         else:
             os.mkdir(self.model_dir)
@@ -25,5 +25,5 @@ class Trainer(nn.Module):
                 net.graph.add_edges(net.graph.nodes(), net.graph.nodes())
                 net.train_model()
                 self.models.append(net)
-                th.save(net.state_dict(), f"{self.model_dir}/checkpoint_{i}.pth")
+                torch.save(net.state_dict(), f"{self.model_dir}/checkpoint_{i}.pth")
         return self.models
