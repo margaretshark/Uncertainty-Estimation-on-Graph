@@ -32,11 +32,6 @@ class Net(nn.Module):
             self.layer1 = utils.MultiHeadGATLayer(self.features_dimension, 8, 2)
             self.layer2 = utils.MultiHeadGATLayer(16, self.num_classes, 1)
 
-        if graph_type == "GCN":
-            super(Net, self).__init__()
-            self.layer1 = utils.GCNLayer(self.features_dimension, 16)
-            self.layer2 = utils.GCNLayer(16, self.num_classes)
-
     def forward(self):
         x = F.relu(self.layer1(self.graph, self.features))
         x = self.layer2(self.graph, x)
