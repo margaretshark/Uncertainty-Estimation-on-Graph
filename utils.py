@@ -44,7 +44,7 @@ class GATLayer(nn.Module):
 
     def edge_attention(self, edges):
         # edge UDF for equation (2)
-        z2 = th.cat([edges.src['z'], edges.dst['z']], dim=1)
+        z2 = torch.cat([edges.src['z'], edges.dst['z']], dim=1)
         a = self.attn_fc(z2)
         return {'e': F.leaky_relu(a)}
 
@@ -57,7 +57,7 @@ class GATLayer(nn.Module):
         # equation (3)
         alpha = F.softmax(nodes.mailbox['e'], dim=1)
         # equation (4)
-        h = th.sum(alpha * nodes.mailbox['z'], dim=1)
+        h = torch.sum(alpha * nodes.mailbox['z'], dim=1)
         return {'h': h}
 
     def forward(self, g, feature):
@@ -83,10 +83,10 @@ class MultiHeadGATLayer(nn.Module):
         head_outs = [attn_head(g, h) for attn_head in self.heads]
         if self.merge == 'cat':
             # concat on the output feature dimension (dim=1)
-            return th.cat(head_outs, dim=1)
+            return torch.cat(head_outs, dim=1)
         else:
             # merge using average
-            return th.mean(th.stack(head_outs))
+            return torch.mean(torch.stack(head_outs))
 
 def load_data(dataset_name: str):
     if dataset_name == "cora":
